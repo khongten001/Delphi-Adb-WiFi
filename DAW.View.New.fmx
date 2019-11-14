@@ -1,0 +1,53 @@
+object ViewAdbDialogNew: TViewAdbDialogNew
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 323
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object Grid1: TGrid
+    Align = Top
+    CanFocus = True
+    ClipChildren = True
+    Size.Width = 640.000000000000000000
+    Size.Height = 193.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    RowCount = 0
+    OnGetValue = Grid1GetValue
+    OnSetValue = Grid1SetValue
+    Viewport.Width = 636.000000000000000000
+    Viewport.Height = 168.000000000000000000
+    object StringColumn1: TStringColumn
+      Header = 'Device'
+    end
+    object StringColumn2: TStringColumn
+      Header = 'IP'
+    end
+    object CheckColumn1: TCheckColumn
+      Header = 'Connected'
+      Size.Width = 119.000000000000000000
+    end
+    object StringColumn3: TStringColumn
+    end
+    object StringColumn4: TStringColumn
+    end
+  end
+  object Button1: TButton
+    Position.X = 400.000000000000000000
+    Position.Y = 224.000000000000000000
+    TabOrder = 3
+    Text = 'Update'
+    OnClick = Button1Click
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    Left = 296
+    Top = 240
+  end
+end

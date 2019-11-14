@@ -32,18 +32,24 @@ type
     mmoLog: TMemo;
     btnConnect: TEditButton;
     btnBrowse: TEditButton;
+    lytExec: TLayout;
+    lblExec: TLabel;
+    edtExec: TEdit;
+    btnExec: TEditButton;
     procedure btnConnectClick(Sender: TObject);
     procedure btnBrowseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure btnExecClick(Sender: TObject);
   private
     { Private declarations }
     FDir: string;
   public
     { Public declarations }
     procedure Log(const AData: string);
-    class function GetDosOutput(CommandLine: string;
-      Work: string = 'C:\'): string;
+    class function GetDosOutput(CommandLine: string; Work: string = 'C:\'): string;
     function SetupDir: Boolean;
+    procedure CheckResult(const Msg: string);
+    procedure ADBExecute(const ACmd: string);
   end;
 
 var
@@ -57,6 +63,11 @@ uses
 
 {$R *.fmx}
 { TViewAdbDialog }
+
+procedure TViewAdbDialog.ADBExecute(const ACmd: string);
+begin
+  CheckResult(GetDosOutput(ACmd, FDir));
+end;
 
 procedure TViewAdbDialog.btnBrowseClick(Sender: TObject);
 var
@@ -77,10 +88,29 @@ procedure TViewAdbDialog.btnConnectClick(Sender: TObject);
 begin
   if SetupDir then
   begin
-    Log(GetDosOutput('adb tcpip 5555', FDir));
-    Log(GetDosOutput('adb connect ' + edtDeviceIp.Text, FDir));
+    CheckResult(GetDosOutput('adb kill-server', FDir));
+    CheckResult(GetDosOutput('adb tcpip 5555', FDir));
+    CheckResult(GetDosOutput('adb connect ' + edtDeviceIp.Text, FDir));
   end;
+end;
 
+procedure TViewAdbDialog.btnExecClick(Sender: TObject);
+begin
+  ADBExecute(edtExec.Text);
+end;
+
+procedure TViewAdbDialog.CheckResult(const Msg: string);
+begin
+  if Msg.Contains('adb: usage: adb connect <host>[:<port>]') then
+  begin
+    Log('Unsupperted format IP. Check settings');
+  end
+  else if Msg.Contains('error: no devices/emulators found') then
+  begin
+
+  end
+  else
+    Log(Msg);
 end;
 
 procedure TViewAdbDialog.FormCreate(Sender: TObject);
@@ -120,8 +150,8 @@ begin
       hStdError := StdOutPipeWrite;
     end;
     WorkDir := Work;
-    Handle := CreateProcess(nil, PChar('cmd.exe /C ' + CommandLine), nil, nil,
-      True, 0, nil, PChar(WorkDir), SI, PI);
+    Handle := CreateProcess(nil, PChar('cmd.exe /C ' + CommandLine), nil, nil, True, 0, nil,
+      PChar(WorkDir), SI, PI);
     CloseHandle(StdOutPipeWrite);
     if Handle then
       try
